@@ -1,2 +1,2 @@
 # MessageService
-A simple messaging system
+A simple Unity messaging system
