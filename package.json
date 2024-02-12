@@ -1,0 +1,33 @@
+﻿{
+  "name": "com.nonatomic.messageservice",
+  "version": "0.0.0-beta",
+  "displayName": "Message Service",
+  "description": "Message Service",
+  "unity": "2022.3",
+  "unityRelease": "1f1",
+  "documentationUrl": "https://github.com/PaulNonatomic/MessageService/blob/main/README.md",
+  "changelogUrl": "https://github.com/PaulNonatomic/MessageService/blob/main/CHANGELOG.md",
+  "dependencies": {
+    
+  },
+  "keywords": [
+    "Unity",
+    "Package",
+    "Message",
+    "Service"
+  ],
+  "author": {
+    "name": "Nonatomic",
+    "email": "paul@nonatomic.co.uk",
+    "url": "https://nonatomic.co.uk/"
+  },
+  "type": "tool",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:PaulNonatomic/MessageService.git"
+  },
+  "samples": [
+   
+  ]
+}
+  

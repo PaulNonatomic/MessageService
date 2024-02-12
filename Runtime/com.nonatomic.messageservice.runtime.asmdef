@@ -1,0 +1,14 @@
+{
+    "name": "com.nonatomic.messageservice.runtime",
+    "rootNamespace": "Nonatomic.MessageService",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
