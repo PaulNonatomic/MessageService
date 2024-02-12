@@ -1,5 +1,5 @@
 {
-  "name": "com.nonatomic.messageservice.runtime.tests.editmode",
+  "name": "com.nonatomic.messageservice.runtime.tests.playmode",
   "rootNamespace": "",
   "references": [],
   "includePlatforms": [],
