@@ -1,6 +1,6 @@
 {
-    "name": "com.nonatomic.messageservice.tests",
-    "rootNamespace": "Nonatomic.MessageService",
+    "name": "com.nonatomic.messageservice.editor",
+    "rootNamespace": "Nonatomic.MessageService.Editor",
     "references": [
         "com.nonatomic.messageservice.runtime"
     ],
