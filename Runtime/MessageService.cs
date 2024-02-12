@@ -17,13 +17,13 @@ namespace Nonatomic.MessageService
 		/// <param name="handler">The handler that will be called when a message is published.</param>
 		public void Subscribe<T>(Action<T> handler) where T : struct
 		{
-			var messageType = typeof(T);
-			if (!_subscribers.ContainsKey(messageType))
+			var type = typeof(T);
+			if (!_subscribers.ContainsKey(type))
 			{
-				_subscribers[messageType] = new List<Delegate>();
+				_subscribers[type] = new List<Delegate>();
 			}
 
-			_subscribers[messageType].Add(handler);
+			_subscribers[type].Add(handler);
 		}
 
 		/// <summary>
@@ -33,10 +33,10 @@ namespace Nonatomic.MessageService
 		/// <param name="handler">The handler to unsubscribe.</param>
 		public void Unsubscribe<T>(Action<T> handler) where T : struct
 		{
-			var messageType = typeof(T);
-			if (!_subscribers.ContainsKey(messageType)) return;
+			var type = typeof(T);
+			if (!_subscribers.ContainsKey(type)) return;
 			
-			_subscribers[messageType].Remove(handler);
+			_subscribers[type].Remove(handler);
 		}
 
 		/// <summary>
@@ -46,10 +46,10 @@ namespace Nonatomic.MessageService
 		/// <param name="message">The message to publish.</param>
 		public void Publish<T>(T message) where T : struct
 		{
-			var messageType = typeof(T);
-			if (!_subscribers.ContainsKey(messageType)) return;
+			var type = typeof(T);
+			if (!_subscribers.ContainsKey(type)) return;
 			
-			foreach (var subscriber in _subscribers[messageType])
+			foreach (var subscriber in _subscribers[type])
 			{
 				(subscriber as Action<T>)?.Invoke(message);
 			}
