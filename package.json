@@ -1,6 +1,6 @@
 ﻿{
   "name": "com.nonatomic.messageservice",
-  "version": "0.0.0-beta",
+  "version": "1.0.0-beta",
   "displayName": "Message Service",
   "description": "Message Service",
   "unity": "2022.3",
