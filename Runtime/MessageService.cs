@@ -1,23 +1,27 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Nonatomic.MessageService
 {
 	/// <summary>
-	/// A service for managing and dispatching messages.
-	/// </summary>
+	/// A service that allows for decoupled communication via message passing.
+	/// Can handle both struct (value type) and class (reference type) messages.
+	/// </summary>>
 	public class MessageService : IMessageService
 	{
-		private readonly Dictionary<Type, List<Delegate>> _subscribers = new Dictionary<Type, List<Delegate>>();
+		/// <summary>
+		/// Stores all subscribers, keyed by message type.
+		/// </summary>
+		private readonly ConcurrentDictionary<Type, List<Delegate>> _subscribers = new ();
 
 		/// <summary>
-		/// Subscribes to messages of a specific type.
+		/// Subscribe a handler for a specific message type.
 		/// </summary>
-		/// <typeparam name="T">The type of message to subscribe to.</typeparam>
-		/// <param name="handler">The handler that will be called when a message is published.</param>
-		public void Subscribe<T>(Action<T> handler) where T : struct
+		public void Subscribe<T>(Action<T> handler)
 		{
 			var type = typeof(T);
+			
 			if (!_subscribers.ContainsKey(type))
 			{
 				_subscribers[type] = new List<Delegate>();
@@ -27,31 +31,43 @@ namespace Nonatomic.MessageService
 		}
 
 		/// <summary>
-		/// Unsubscribes from messages of a specific type.
+		/// Unsubscribe a handler from a specific message type.
 		/// </summary>
-		/// <typeparam name="T">The type of message to unsubscribe from.</typeparam>
-		/// <param name="handler">The handler to unsubscribe.</param>
-		public void Unsubscribe<T>(Action<T> handler) where T : struct
+		public void Unsubscribe<T>(Action<T> handler)
 		{
 			var type = typeof(T);
 			if (!_subscribers.ContainsKey(type)) return;
 			
 			_subscribers[type].Remove(handler);
 		}
+		
+		/// <summary>
+		/// Unsubscribes from all messages.
+		/// </summary>
+		public void UnsubscribeAll()
+		{
+			_subscribers.Clear();
+		}
 
 		/// <summary>
-		/// Publishes a message to all subscribers of that message type.
+		/// Publish a message of a specific type to all its subscribers.
 		/// </summary>
-		/// <typeparam name="T">The type of message to publish.</typeparam>
-		/// <param name="message">The message to publish.</param>
-		public void Publish<T>(T message) where T : struct
+		public void Publish<T>(T message)
 		{
 			var type = typeof(T);
 			if (!_subscribers.ContainsKey(type)) return;
 			
 			foreach (var subscriber in _subscribers[type])
 			{
-				(subscriber as Action<T>)?.Invoke(message);
+				try
+				{
+					(subscriber as Action<T>)?.Invoke(message);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					throw;
+				}
 			}
 		}
 	}
