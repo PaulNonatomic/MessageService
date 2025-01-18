@@ -13,6 +13,18 @@ To install MessageService in your Unity project, add the package from the git UR
 - **Automatically unsubscribe**: After receiving a message once with SubscribeOnce feature
 
 ## Usage
+### Creating Messages
+Messages can be any type, struct or class, depending on your needs.  
+**Structs** are often preferred because they are value types, can be more efficient in some scenarios, and have well-defined copy semantics.  
+**Classes** might be a better choice if your message needs reference semantics, inheritance, or more complex structures.
+
+```csharp
+public struct MyMessage
+{
+    public string Content;
+}
+```
+
 ### Subscribing to a Message
 To subscribe to a message type, use the `Subscribe<T>` method where `T` is your message type:
 
