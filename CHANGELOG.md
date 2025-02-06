@@ -1,6 +1,7 @@
 # Change Log
 
 ## [1.1.0] - Feb 06, 2025
+- Added an optional publisher parameter to the Publish method for debugging purposes and potential future tooling.
 - Found a bug where unsubscribing from a message within a subscription handler would modify the underlying collection and cause an exception  while iterating over it.
   - I've added a test to reproduce the issue and fixed the bug.
   - The solution is to use a multicast delegate to store subscribers which removes the need to iterate over the collection when publishing messages.
