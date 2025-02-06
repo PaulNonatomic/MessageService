@@ -11,7 +11,6 @@ namespace Nonatomic.MessageService
 		private void Awake()
 		{
 			_serviceLocator.Register<IMessageService>(new MessageService());
-			Debug.Log("Regitered MessageService with ServiceLocator.");
 		}
 	}
 }

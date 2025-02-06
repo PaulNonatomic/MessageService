@@ -26,7 +26,7 @@ namespace Tests.EditMode
 		{
 			_messageService.Subscribe<TestMessage>(HandleTestMessage);
 
-			var expectedMessage = new TestMessage { Content = "Hello, world!"};
+			var expectedMessage = new TestMessage { Content = "Hello, world!" };
 			_messageService.Publish(expectedMessage);
 
 			Assert.That(_lastReceivedMessage, Is.EqualTo(expectedMessage));
@@ -39,7 +39,7 @@ namespace Tests.EditMode
 			var additionalMessageReceived = false;
 			_messageService.Subscribe<TestMessage>(_ => additionalMessageReceived = true);
 
-			var expectedMessage = new TestMessage { Content = "Hello, world!"};
+			var expectedMessage = new TestMessage { Content = "Hello, world!" };
 			_messageService.Publish(expectedMessage);
 
 			Assert.That(_lastReceivedMessage, Is.EqualTo(expectedMessage));
@@ -52,7 +52,7 @@ namespace Tests.EditMode
 			Action<TestMessage> handler = HandleTestMessage;
 			_messageService.Subscribe(handler);
 
-			var expectedMessage = new TestMessage { Content = "Hello, world!"};
+			var expectedMessage = new TestMessage { Content = "Hello, world!" };
 			_messageService.Unsubscribe(handler);
 			_messageService.Publish(expectedMessage);
 
@@ -88,7 +88,7 @@ namespace Tests.EditMode
 			secondReceivedMessage = false;
 			_messageService.Publish(testMessage);
 
-			Assert.That(_lastReceivedMessage, Is.Not.EqualTo(testMessage)); // firstHandler should not been called
+			Assert.That(_lastReceivedMessage, Is.Not.EqualTo(testMessage)); // firstHandler should not be called
 			Assert.That(secondReceivedMessage, Is.True); // secondHandler should have been called
 		}
 		
@@ -103,9 +103,6 @@ namespace Tests.EditMode
 			_messageService.Publish(testMessage);
 
 			Assert.That(_lastReceivedMessage, Is.EqualTo(testMessage));
-			
-			// Note: Based on the implementation of IMessageService, the handler might be called twice.
-			// This cannot be checked with this simple test setup.
 		}
 		
 		[Test]
@@ -136,6 +133,25 @@ namespace Tests.EditMode
 
 			_messageService.Publish(testMessage);
 			Assert.That(_lastReceivedMessage, Is.EqualTo(testMessage));
+		}
+
+		[Test]
+		public void Test_PublishDoesNotCauseCollectionModificationException()
+		{
+			var selfRemovingHandlerCalled = false;
+			Action<TestMessage> selfRemovingHandler = null;
+			
+			selfRemovingHandler = (message) =>
+			{
+				selfRemovingHandlerCalled = true;
+				_messageService.Unsubscribe<TestMessage>(selfRemovingHandler);
+			};
+
+			_messageService.Subscribe<TestMessage>(selfRemovingHandler);
+			var testMessage = new TestMessage { Content = "Hello, test!" };
+
+			Assert.DoesNotThrow(() => _messageService.Publish(testMessage));
+			Assert.That(selfRemovingHandlerCalled, Is.True);
 		}
 
 		private void HandleTestMessage(TestMessage message)
