@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Nonatomic.MessageService
 {
@@ -10,10 +12,19 @@ namespace Nonatomic.MessageService
 	/// </summary>>
 	public class MessageService : IMessageService
 	{
+		public event Action<Type> SubscriptionAdded;
+		public event Action<Type> SubscriptionRemoved;
+		public event Action<Type, object> MessagePublished;
+
 		/// <summary>
-		/// Stores all subscribers, keyed by message type.
+		/// Stores a multicast delegate per message type
 		/// </summary>
-		private readonly ConcurrentDictionary<Type, List<Delegate>> _subscribers = new ();
+		private readonly ConcurrentDictionary<Type, Delegate> _subscribers = new();
+
+		public IEnumerable<Type> GetActiveMessageTypes()
+		{
+			return _subscribers.Keys.ToArray();
+		}
 
 		/// <summary>
 		/// Subscribe a handler for a specific message type.
@@ -21,15 +32,16 @@ namespace Nonatomic.MessageService
 		public void Subscribe<T>(Action<T> handler)
 		{
 			var type = typeof(T);
-			
-			if (!_subscribers.ContainsKey(type))
-			{
-				_subscribers[type] = new List<Delegate>();
-			}
 
-			_subscribers[type].Add(handler);
+			_subscribers.AddOrUpdate(
+				type,
+				handler,
+				(key, existing) => Delegate.Combine(existing, handler)
+			);
+
+			SubscriptionAdded?.Invoke(type);
 		}
-		
+
 		/// <summary>
 		/// Subscribes the specified handler to the specified message type (T).
 		/// After the message is received for the first time, the handler is automatically unsubscribed.
@@ -56,11 +68,22 @@ namespace Nonatomic.MessageService
 		public void Unsubscribe<T>(Action<T> handler)
 		{
 			var type = typeof(T);
-			if (!_subscribers.ContainsKey(type)) return;
-			
-			_subscribers[type].Remove(handler);
+			if (!_subscribers.TryGetValue(type, out var existing)) return;
+
+			// Remove the handler from the multicast delegate.
+			var newDelegate = Delegate.Remove(existing, handler);
+			if (newDelegate == null)
+			{
+				_subscribers.TryRemove(type, out _);
+			}
+			else
+			{
+				_subscribers[type] = newDelegate;
+			}
+
+			SubscriptionRemoved?.Invoke(type);
 		}
-		
+
 		/// <summary>
 		/// Unsubscribes from all messages.
 		/// </summary>
@@ -70,25 +93,29 @@ namespace Nonatomic.MessageService
 		}
 
 		/// <summary>
-		/// Publish a message of a specific type to all its subscribers.
+		/// Publish a message to all subscribers of type T,
+		/// optionally specifying the publisher for debugging/tracking.
 		/// </summary>
-		public void Publish<T>(T message)
+		public void Publish<T>(T message, object publisher = null)
 		{
 			var type = typeof(T);
-			if (!_subscribers.ContainsKey(type)) return;
-			
-			foreach (var subscriber in _subscribers[type])
+			if (!_subscribers.TryGetValue(type, out var subscribers)) return;
+
+			// Cast the delegate to Action<T>
+			if (subscribers is Action<T> action)
 			{
 				try
 				{
-					(subscriber as Action<T>)?.Invoke(message);
+					action.Invoke(message);
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine(e);
+					Debug.LogError(e);
 					throw;
 				}
 			}
+
+			MessagePublished?.Invoke(type, publisher);
 		}
 	}
 }

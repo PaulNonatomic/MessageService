@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Nonatomic.MessageService
 {	
@@ -8,6 +9,12 @@ namespace Nonatomic.MessageService
 	/// </summary>
 	public interface IMessageService
 	{
+		/// <summary>
+		/// Retrieves the message types that currently have active subscribers.
+		/// </summary>
+		/// <returns>A collection of message types that are actively subscribed to.</returns>
+		IEnumerable<Type> GetActiveMessageTypes();
+
 		/// <summary>
 		/// Subscribes to messages of a specific type.
 		/// </summary>
@@ -32,9 +39,11 @@ namespace Nonatomic.MessageService
 	
 		/// <summary>
 		/// Publishes a message to all subscribers of that message type.
+		/// Optionally provide a publisher object for debugging/tracking.
 		/// </summary>
 		/// <typeparam name="T">The type of message to publish. Can be a class or struct.</typeparam>
 		/// <param name="message">The message to publish.</param>
-		void Publish<T>(T message);
+		/// <param name="publisher">Optional. The source/publisher of this message.</param>
+		void Publish<T>(T message, object publisher = null);
 	}
 }
