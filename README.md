@@ -50,6 +50,12 @@ To publish a message, use the Publish<T> method:
 ```csharp
 _messageService.Publish(new MyMessage { Content = "Hello, world!" });
 ```
+
+Optionally pass a publisher object to the Publish method for debugging purposes and potential future tooling:
+```csharp
+_messageService.Publish(new MyMessage { Content = "Hello, world!" }, publisher: this);
+```
+
 ### Subscribe Once
 Messages can be subscribed to be received only once using SubscribeOnce. After the message is received for the first time, the handler is automatically unsubscribed.
 
