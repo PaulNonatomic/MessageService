@@ -36,6 +36,8 @@ namespace Nonatomic.MessageService
 		/// <typeparam name="T">The type of message to unsubscribe from. Can be a class or struct.</typeparam>
 		/// <param name="handler">The handler to unsubscribe.</param>
 		void Unsubscribe<T>(Action<T> handler);
+
+        void UnsubscribeAll();
 	
 		/// <summary>
 		/// Publishes a message to all subscribers of that message type.

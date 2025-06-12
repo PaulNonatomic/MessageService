@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.2] - Jun 12, 2025
+- Hotfix to expose the UnsubscribeAll method in the IMessagerService interface.
+
 ## [1.1.1] - Jun 12, 2025
 - Added uninstall method for MessageService installer
 
