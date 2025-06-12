@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.1] - Jun 12, 2025
+- Added uninstall method for MessageService installer
+
 ## [1.1.0] - Feb 06, 2025
 - Added an optional publisher parameter to the Publish method for debugging purposes and potential future tooling.
 - Found a bug where unsubscribing from a message within a subscription handler would modify the underlying collection and cause an exception  while iterating over it.

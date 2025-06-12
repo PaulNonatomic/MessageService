@@ -8,9 +8,19 @@ namespace Nonatomic.MessageService
 	{
 		[SerializeField] private ServiceLocator.ServiceLocator _serviceLocator;
 
+		private IMessageService _messageService;
+
 		private void Awake()
 		{
+			_messageService = new MessageService();
 			_serviceLocator.Register<IMessageService>(new MessageService());
+		}
+		
+		private void OnDestroy()
+		{
+			_messageService.UnsubscribeAll();
+			_serviceLocator.Unregister<IMessageService>();
+			_messageService = null;
 		}
 	}
 }
